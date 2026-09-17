@@ -5,7 +5,11 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>Assets\Valkyrie.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="Assets\Valkyrie.ico" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="items.json" LogicalName="Catalog.items.json" />
     <EmbeddedResource Include="Icons\*.png" LogicalName="Catalog.Icons.%(Filename)%(Extension)" />

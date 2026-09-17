@@ -97,5 +97,8 @@ The backup must belong to the same character and use a supported format. If a da
 [url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/issues]Report a bug[/url]
 Include the game version, reproduction steps and error message. Do not publish private character files.
 
+[h1]Buy the developer a tea[/h1]
+If the editor was useful, you can optionally [url=https://www.donationalerts.com/r/xoz9iuh]leave a tea via DonationAlerts[/url]. It is not required and does not unlock extra features.
+
 [h1]Disclaimer[/h1]
 This project is an unofficial fan tool. All Valheim graphics, icons and trademarks belong to Iron Gate Studio and Coffee Stain Publishing. The author is not affiliated with the game developers.

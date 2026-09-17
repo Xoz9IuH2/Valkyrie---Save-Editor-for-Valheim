@@ -13,4 +13,6 @@ Create two separate guides so each has the correct language selection.
 
 The text links to the GitHub release as the current download. The Nexus page is included with the current review/quarantine notice: https://www.nexusmods.com/valheim/mods/3821. Do not present the Nexus file as available until the review is complete. Do not ask users to disable protection.
 
+A short optional DonationAlerts tea link is included at the end of both guides. Keep it optional and secondary to the usage instructions. Steam may hide, flag or remove commercial/external donation links; if that happens, leave the rest of the guide intact.
+
 No Steam publication has been performed by these files. Publish through your own Steam account and review current Steam Community rules first.
