@@ -1,6 +1,12 @@
 # Valkyrie
 ### Save Editor for Valheim
 
+[![Download for Windows x64](https://img.shields.io/badge/Download-Windows_x64-2ea44f?style=for-the-badge&logo=windows)](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/download/v0.1.0-beta/Editor.exe)
+[![Скачать для Windows x64](https://img.shields.io/badge/Скачать-Windows_x64-2ea44f?style=for-the-badge)](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/download/v0.1.0-beta/Editor.exe)
+
+**One file, no installation / Один файл, без установки.**
+[Release notes / Описание релиза](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/tag/v0.1.0-beta)
+
 [![Support the developer](https://img.shields.io/badge/Support%20the%20developer-DonationAlerts-orange?style=for-the-badge)](https://www.donationalerts.com/r/xoz9iuh)
 
 [English](#english) | [Русский](#русский)
@@ -92,7 +98,7 @@ The extractor currently expects bundles `c4210710`, `6a33a62` and `resources.ass
 
 ### Limitations
 
-- Automated round-trip and editing tests pass; in-game loading of edited saves has not yet been verified by the developer.
+- Automated round-trip and editing tests pass. The project owner has also reported successful in-game testing of this build; this does not guarantee compatibility with other game versions.
 - Internal-item filtering uses heuristics. Check the technical item ID before adding unusual variants.
 - Clearing item flags does not clear profile-level cheat history or guarantee achievement eligibility.
 - Adding new skills and editing maps are not implemented.
@@ -193,7 +199,7 @@ python Editor/extract_catalog.py "C:\path\to\Valheim" Editor/items.json
 
 ### Ограничения
 
-- Автоматические проверки чтения, записи и редактирования проходят; загрузка изменённых сейвов в самой игре разработчиком пока не подтверждена.
+- Автоматические проверки чтения, записи и редактирования проходят. Владелец проекта также подтвердил успешную проверку этой сборки в игре; это не гарантирует совместимость с другими версиями Valheim.
 - Определение служебных предметов приблизительное. Проверяйте технический ID необычных вариантов.
 - Очистка флагов предметов не очищает историю читов персонажа и не гарантирует доступность достижений.
 - Добавление новых навыков и редактирование карты пока не реализованы.
