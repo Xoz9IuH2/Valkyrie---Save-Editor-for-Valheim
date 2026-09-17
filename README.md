@@ -23,7 +23,7 @@
 
 ### Requirements
 
-- Windows with **.NET 8 Desktop Runtime** for the framework-dependent build.
+- Windows x64 for the standalone build. No .NET installation or internet connection is required to run it. Framework-dependent builds still require **.NET 8 Desktop Runtime**.
 - **.NET 8 SDK** if building from source.
 - Supported save formats: **profile 46, player 33, inventory 109, skills 2**. Other formats are rejected. Compatibility with every Valheim update is not guaranteed.
 - Local character saves. Direct Steam Cloud editing is not supported.
@@ -32,7 +32,7 @@
 
 1. Close Valheim before editing and keep an independent backup of your character.
 2. If a compiled version is available under [Releases](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases), extract the **entire archive**. Otherwise, build from source using the commands below.
-3. Launch `Editor.exe` from the published folder. Keep `items.json`, `Icons` and the other published files beside it.
+3. Launch `Editor.exe`. The standalone version is one file: .NET, the catalog and icons are included. On first launch, native runtime components may be extracted automatically into the user's temporary directory.
 4. Click **Open character** and select a `.fch` file.
 5. Use **Skills** to change existing skill levels. Use **Inventory** to select, add, edit, move or remove items.
 6. Click **Save to game** and confirm the replacement. The game must be closed.
@@ -66,10 +66,10 @@ dotnet publish Editor/Editor.csproj -c Release -o ValheimEditor
 To create a standalone Windows x64 build with the .NET runtime included:
 
 ```powershell
-dotnet publish Editor/Editor.csproj -c Release -r win-x64 --self-contained true -o artifacts/win-x64
+dotnet publish Editor/Editor.csproj -p:PublishProfile=Standalone -o artifacts/standalone
 ```
 
-Distribute the entire published folder, not just the executable. Build output and private saves are excluded from Git.
+For the standalone build, distribute only `artifacts/standalone/Editor.exe`. For framework-dependent builds, distribute the entire published folder. Catalog data and icons are embedded in both. Build output and private saves are excluded from Git. Runtime extraction does not require administrator privileges; the temporary directory must be writable.
 
 ### Testing And Catalog Updates
 
@@ -124,7 +124,7 @@ For bug reports, use [GitHub Issues](https://github.com/Xoz9IuH2/Valkyrie---Save
 
 ### Требования
 
-- Windows и **.NET 8 Desktop Runtime** для обычной сборки.
+- Windows x64 для автономной сборки. Устанавливать .NET и подключаться к интернету для запуска не нужно. Для обычной сборки по-прежнему нужен **.NET 8 Desktop Runtime**.
 - **.NET 8 SDK**, если собираете программу из исходников.
 - Поддерживаемые форматы сейва: **профиль 46, персонаж 33, инвентарь 109, навыки 2**. Другие форматы отклоняются. Совместимость с каждым обновлением Valheim не гарантируется.
 - Локальные сохранения. Прямое редактирование Steam Cloud не поддерживается.
@@ -133,7 +133,7 @@ For bug reports, use [GitHub Issues](https://github.com/Xoz9IuH2/Valkyrie---Save
 
 1. Закройте Valheim и сделайте отдельную резервную копию персонажа.
 2. Если готовая сборка опубликована в [Releases](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases), распакуйте **весь архив**. Иначе соберите программу по инструкции ниже.
-3. Запустите `Editor.exe`. Рядом должны оставаться `items.json`, папка `Icons` и остальные файлы сборки.
+3. Запустите `Editor.exe`. Автономная версия состоит из одного файла: .NET, каталог и иконки уже встроены. При первом запуске нативные компоненты среды выполнения могут автоматически распаковаться во временную папку пользователя.
 4. Нажмите **«Открыть персонажа»** и выберите файл `.fch`.
 5. Меняйте уровни на вкладке **«Навыки»**. На вкладке **«Инвентарь»** нажмите на ячейку для выбора предмета или перетащите предмет в другую ячейку.
 6. Нажмите **«Сохранить в игру»** и подтвердите замену. Игра должна быть закрыта.
@@ -167,10 +167,10 @@ dotnet publish Editor/Editor.csproj -c Release -o ValheimEditor
 Автономная сборка Windows x64 со встроенным .NET:
 
 ```powershell
-dotnet publish Editor/Editor.csproj -c Release -r win-x64 --self-contained true -o artifacts/win-x64
+dotnet publish Editor/Editor.csproj -p:PublishProfile=Standalone -o artifacts/standalone
 ```
 
-Передавать нужно всю папку сборки, а не только `.exe`. Готовые сборки и личные сейвы исключены из Git.
+Для автономной версии достаточно передать `artifacts/standalone/Editor.exe`. Для обычной сборки передавайте всю папку публикации. Каталог и иконки встроены в обе версии. Права администратора для распаковки не нужны, но временная папка должна быть доступна для записи. Готовые сборки и личные сейвы исключены из Git.
 
 ### Проверки И Обновление Каталога
 
