@@ -1,0 +1,101 @@
+TITLE
+Valkyrie: How to Edit Your Valheim Character, Skills and Inventory
+
+SHORT DESCRIPTION
+A guide to Valkyrie, a standalone Windows editor for local Valheim characters: skills, inventory, backups and recovery. No BepInEx or separate .NET installation required.
+
+BODY (STEAM MARKUP)
+
+[h1]What is Valkyrie?[/h1]
+Valkyrie is my unofficial editor for local Valheim character saves. It is a separate Windows x64 application, not a mod you install into the game.
+
+Edit your name and existing skills, add or replace items, move them between slots and restore backups. English/Russian interfaces and light/dark themes are available.
+
+[b]Close Valheim and make an independent backup before editing anything.[/b]
+
+[h1]Download[/h1]
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/tag/v0.1.0-beta]Valkyrie release on GitHub[/url]
+
+Expand Assets and download [b]Editor.exe[/b], not Source code, if you want the ready-to-run application.
+
+The executable includes .NET, the item catalog and icons. No internet connection, BepInEx or mod manager is required to use it. Put it in a convenient folder and launch it. Native runtime components may extract into your user temporary directory on first launch.
+
+[b]File review notice:[/b] when the ZIP was uploaded to Nexus, two VirusTotal engines (Bkav Pro and Zillya) reported detections and the file was quarantined. I have requested a manual review from Nexus. A false positive has not yet been confirmed. Do not disable antivirus protection or bypass blocks to run it. If you prefer to wait for the review results, postpone using the tool.
+
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim]Source code and documentation[/url]
+[url=https://www.nexusmods.com/valheim/mods/3821]Nexus Mods page[/url]
+
+[h1]Compatibility[/h1]
+[list]
+[*]Windows x64.
+[*]Local .fch characters. Direct Steam Cloud editing is not supported.
+[*]Save formats: profile 46, player 33, inventory 109, skills 2. Unsupported formats are rejected.
+[*]The item catalog is a snapshot of the game build used during development, not an automatically updated database.
+[*]Modded saves are not officially supported.
+[/list]
+I have tested this build in-game. That does not guarantee compatibility with other Valheim updates.
+
+[h1]1. Prepare Your Character[/h1]
+If your character is in cloud storage, move it to local storage through Valheim's save-management interface. Then close the game completely.
+
+Press Win+R and open:
+[code]%USERPROFILE%\AppData\LocalLow\IronGate\Valheim\characters_local[/code]
+
+Copy the character's .fch file to a separate backup folder outside characters_local. Do not keep multiple active copies of the same character in the game folder.
+
+Launch Editor.exe, click [b]Open character[/b] and select the original local .fch file.
+
+[h1]2. Edit Skills[/h1]
+On the [b]Skills[/b] tab, use a slider or the adjacent numeric input to set a level from 0 to 100.
+
+Only skills already present in the save are listed. Adding missing skills is not implemented yet.
+
+[h1]3. Manage Inventory[/h1]
+Click a cell on the [b]Inventory[/b] tab to open the item picker.
+[list]
+[*]Search by English/Russian name or prefab ID, such as SwordIron.
+[*]Filter by weapons, armor, resources, food or other items.
+[*]Set quantity with the slider or numeric input, within the catalog stack limit.
+[*]For items with upgrade levels, choose a level within their maximum quality.
+[*]Click Apply. Replacing a different item requires confirmation and resets its previous properties.
+[*]Use Clear slot to delete an item.
+[/list]
+Drag an item onto an empty cell to move it. Dropping onto an occupied cell swaps the two items.
+
+Internal variants are hidden by default. This classification is heuristic, so check the prefab ID carefully, especially when showing internal items.
+
+[h1]4. Undo And Item Flags[/h1]
+[b]Ctrl+Z[/b] or Undo reverses an edit in memory. Opening, saving or restoring a file clears the undo history.
+
+[b]Clear item cheat flags[/b] removes that marker from inventory items. Newly added items do not carry the marker. This does not clear profile-level cheat history or guarantee achievement eligibility.
+
+Use edited characters in your own game; agree with the owner and other players before using them on someone else's server.
+
+[h1]5. Save Changes[/h1]
+Make sure Valheim is closed. Click [b]Save to game[/b] and confirm the destination.
+
+The editor saves into characters_local using the original filename. The previous file is retained in the [b]Backups[/b] subfolder. If the file changed externally after opening, saving is rejected; reopen the current file instead.
+
+Launch Valheim and check your character after saving. Keep your independent backup until you have verified the result.
+
+[h1]6. Restore A Backup[/h1]
+[list=1]
+[*]Close Valheim and open the local character in the editor.
+[*]Click Restore backup.
+[*]Select a backup from characters_local\Backups.
+[*]Confirm restoration. The current on-disk save is also backed up first.
+[/list]
+The backup must belong to the same character and use a supported format. If a damaged save cannot be opened at all, restore your independent copy manually with the game closed, retaining the original .fch filename.
+
+[h1]Troubleshooting[/h1]
+[list]
+[*]Character not found: check that it is local, not cloud-stored.
+[*]Unsupported format: do not force a conversion; use a compatible editor version.
+[*]Saving blocked: close Valheim and check whether the file changed since opening.
+[*]An unusual item does not work: restore a backup and check its prefab ID and catalog compatibility.
+[/list]
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/issues]Report a bug[/url]
+Include the game version, reproduction steps and error message. Do not publish private character files.
+
+[h1]Disclaimer[/h1]
+This project is an unofficial fan tool. All Valheim graphics, icons and trademarks belong to Iron Gate Studio and Coffee Stain Publishing. The author is not affiliated with the game developers.

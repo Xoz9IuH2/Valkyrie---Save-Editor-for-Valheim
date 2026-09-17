@@ -1,0 +1,110 @@
+[size=6][b]Valkyrie - Save Editor for Valheim[/b][/size]
+
+[b]An external character editor, not an in-game mod.[/b]
+Windows x64 | English / Русский | Standalone executable
+
+[size=4][b]ENGLISH[/b][/size]
+
+Valkyrie lets you edit local Valheim character saves through a desktop interface. Adjust skills, manage inventory and restore backups without installing BepInEx or a separate .NET runtime.
+
+[b]Features[/b]
+[list]
+[*]Edit character names and existing skill levels with sliders or precise numeric input.
+[*]Manage an 8x4 inventory with game icons, search and category filters.
+[*]Add, replace or remove items within their catalog stack and quality limits.
+[*]Drag items into empty slots or swap occupied slots.
+[*]Hide internal item variants; optionally show them in the picker.
+[*]Undo edits with Ctrl+Z.
+[*]Clear item cheat flags. Newly added items have this flag cleared.
+[*]Save directly to the local character folder with automatic backups.
+[*]Restore backups with character ID and checksum validation.
+[*]Switch between English/Russian and light/dark themes.
+[/list]
+
+[b]Installation and use[/b]
+[list=1]
+[*]Download the main file manually and extract the ZIP to a folder of your choice. Do not install it with Vortex or into BepInEx.
+[*]Close Valheim and keep an independent backup of your character.
+[*]Run Editor.exe. No separate .NET installation is needed.
+[*]Click Open character and select a local .fch file.
+[*]Edit Skills or Inventory. Click Save to game and confirm when ready.
+[/list]
+
+[b]Local save folder[/b]
+%USERPROFILE%\AppData\LocalLow\IronGate\Valheim\characters_local
+
+For a Steam Cloud character, first move it to local storage using Valheim's save-management interface. Direct cloud editing is not supported.
+
+[b]Backups[/b]
+Before replacing an existing save, its previous contents are retained in characters_local\Backups. The editor rejects a file changed externally since opening. To restore, open the local character, choose Restore backup, select a backup and confirm. The current file is backed up before replacement.
+
+[b]Compatibility and limitations[/b]
+This beta supports save formats [b]profile 46, player 33, inventory 109 and skills 2[/b]. It does not support every historical or future Valheim version. Item data is bundled and does not update automatically. Modded saves are not officially supported.
+
+Automated tests pass, and the project owner has reported successful in-game testing. Keep independent backups anyway. Internal-item filtering is heuristic. Clearing item flags does not clear profile-level cheat history or guarantee achievement eligibility. New skill creation and map editing are not implemented. Undo history is cleared after opening, saving or restoring.
+
+[b]Downloads and source[/b]
+[url=https://www.nexusmods.com/valheim/mods/3821]Nexus Mods page[/url]
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim]GitHub project and documentation[/url]
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/issues]Report an issue[/url]
+
+Please include the game version, reproduction steps and error message. Do not post private save files publicly.
+
+[b]Support development[/b]
+[url=https://www.donationalerts.com/r/xoz9iuh]Support the developer on DonationAlerts[/url]
+Support is entirely optional.
+
+This is an unofficial fan tool, not affiliated with the game developers. Valheim graphics, icons and trademarks belong to Iron Gate Studio and Coffee Stain Publishing.
+
+[size=4][b]РУССКИЙ[/b][/size]
+
+Valkyrie — отдельная программа для редактирования локальных персонажей Valheim. Меняйте навыки, управляйте инвентарём и восстанавливайте копии без BepInEx и отдельной установки .NET.
+
+[b]Возможности[/b]
+[list]
+[*]Изменение имени и имеющихся навыков ползунком или точным числом.
+[*]Инвентарь 8x4 с игровыми иконками, поиском и фильтрами категорий.
+[*]Добавление, замена и удаление предметов с ограничениями стака и уровня из каталога.
+[*]Перетаскивание в пустую ячейку или обмен между занятыми ячейками.
+[*]Скрытие служебных вариантов с возможностью включить их отображение.
+[*]Отмена правок через Ctrl+Z.
+[*]Очистка чит-флагов предметов. Новые предметы добавляются без этого флага.
+[*]Сохранение прямо в папку персонажей с автоматическим резервированием.
+[*]Восстановление копий с проверкой ID персонажа и контрольной суммы.
+[*]Русский и английский интерфейсы, светлая и тёмная темы.
+[/list]
+
+[b]Установка и использование[/b]
+[list=1]
+[*]Скачайте основной файл вручную и распакуйте ZIP в удобную папку. Не устанавливайте через Vortex или в BepInEx.
+[*]Закройте Valheim и сделайте независимую резервную копию персонажа.
+[*]Запустите Editor.exe. Отдельная установка .NET не нужна.
+[*]Нажмите «Открыть персонажа» и выберите локальный файл .fch.
+[*]Внесите правки на вкладках «Навыки» и «Инвентарь», затем нажмите «Сохранить в игру» и подтвердите замену.
+[/list]
+
+[b]Папка локальных персонажей[/b]
+%USERPROFILE%\AppData\LocalLow\IronGate\Valheim\characters_local
+
+Облачного персонажа сначала перенесите в локальное хранилище через управление сохранениями в Valheim. Прямое редактирование Steam Cloud не поддерживается.
+
+[b]Резервные копии[/b]
+Перед заменой существующего сейва предыдущий файл сохраняется в characters_local\Backups. Если сейв изменился после открытия, редактор откажется его перезаписывать. Для восстановления откройте локального персонажа, нажмите «Восстановить копию», выберите файл и подтвердите действие. Текущий файл тоже будет зарезервирован.
+
+[b]Совместимость и ограничения[/b]
+Бета-версия поддерживает форматы [b]профиль 46, персонаж 33, инвентарь 109, навыки 2[/b], а не любые старые или будущие версии Valheim. Каталог встроен и не обновляется автоматически. Сейвы с модами официально не поддерживаются.
+
+Автоматические тесты проходят, владелец проекта подтвердил работу в игре. Всё равно храните независимые резервные копии. Определение служебных предметов приблизительное. Очистка флагов предметов не очищает историю читов персонажа и не гарантирует доступность достижений. Добавление новых навыков и редактирование карты пока не реализованы. Открытие, сохранение и восстановление очищают историю отмены.
+
+[b]Исходники и обратная связь[/b]
+[url=https://www.nexusmods.com/valheim/mods/3821]Страница на Nexus Mods[/url]
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim]Проект и документация на GitHub[/url]
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/issues]Сообщить об ошибке[/url]
+
+Укажите версию игры, шаги воспроизведения и текст ошибки. Не публикуйте личные сейвы в открытом доступе.
+
+[b]Поддержка разработчика[/b]
+[url=https://www.donationalerts.com/r/xoz9iuh]Поддержать разработчика через DonationAlerts[/url]
+Поддержка полностью добровольная.
+
+[quote]Данный проект является неофициальным фанатским инструментом. Все графические ресурсы, иконки и торговые марки Valheim принадлежат Iron Gate Studio и Coffee Stain Publishing. Автор не связан с разработчиками игры.[/quote]

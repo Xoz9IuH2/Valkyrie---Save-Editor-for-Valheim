@@ -1,0 +1,36 @@
+VALKYRIE 0.1.0-beta - WINDOWS X64
+
+ENGLISH
+
+1. Extract the archive and run Editor.exe. No separate .NET installation is needed.
+2. Close Valheim and keep an independent backup of your character.
+3. Open a local .fch character, edit it, then choose Save to game.
+
+This is an external tool, not a BepInEx or Vortex mod.
+Native runtime components may automatically extract to your temporary folder.
+Supported formats: profile 46, player 33, inventory 109, skills 2.
+The catalog is bundled and does not update automatically.
+Local saves: %USERPROFILE%\AppData\LocalLow\IronGate\Valheim\characters_local
+Previous files are backed up in characters_local\Backups.
+Cloud characters must first be moved to local storage through Valheim.
+
+РУССКИЙ
+
+1. Распакуйте архив и запустите Editor.exe. Отдельная установка .NET не нужна.
+2. Закройте Valheim и сделайте независимую резервную копию персонажа.
+3. Откройте локального персонажа .fch, внесите правки и нажмите «Сохранить в игру».
+
+Это отдельная программа, не мод для BepInEx или Vortex.
+Компоненты среды выполнения могут автоматически распаковаться во временную папку.
+Форматы: профиль 46, персонаж 33, инвентарь 109, навыки 2.
+Каталог встроен и автоматически не обновляется.
+Сейвы: %USERPROFILE%\AppData\LocalLow\IronGate\Valheim\characters_local
+Предыдущие файлы сохраняются в characters_local\Backups.
+Облачного персонажа сначала перенесите в локальное хранилище через Valheim.
+
+Source / Исходники:
+https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim
+Support / Поддержка:
+https://www.donationalerts.com/r/xoz9iuh
+
+Данный проект является неофициальным фанатским инструментом. Все графические ресурсы, иконки и торговые марки Valheim принадлежат Iron Gate Studio и Coffee Stain Publishing. Автор не связан с разработчиками игры.

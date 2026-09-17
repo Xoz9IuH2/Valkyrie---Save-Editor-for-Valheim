@@ -5,8 +5,11 @@
 [![Скачать для Windows x64](https://img.shields.io/badge/Скачать-Windows_x64-2ea44f?style=for-the-badge)](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/download/v0.1.0-beta/Editor.exe)
 
 **One file, no installation / Один файл, без установки.**
-[Release notes / Описание релиза](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/tag/v0.1.0-beta)
+[Release notes / Описание релиза](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/tag/v0.1.0-beta) · [Nexus Mods](https://www.nexusmods.com/valheim/mods/3821)
 
+The Nexus file is currently marked as suspicious pending a manual review. Until that review is complete, download from GitHub Releases. Do not disable antivirus protection.
+
+[![Nexus Mods](https://img.shields.io/badge/Nexus_Mods-Valkyrie-orange?style=for-the-badge)](https://www.nexusmods.com/valheim/mods/3821)
 [![Support the developer](https://img.shields.io/badge/Support%20the%20developer-DonationAlerts-orange?style=for-the-badge)](https://www.donationalerts.com/r/xoz9iuh)
 
 [English](#english) | [Русский](#русский)
