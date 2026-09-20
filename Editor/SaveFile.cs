@@ -26,6 +26,8 @@ public sealed class SaveFile
     public int ProfileVersion { get; }
     public int PlayerVersion { get; private set; }
     public int InventoryVersion { get; private set; }
+    public int InventoryRows { get; private set; } = 4;
+    public int InventorySlots => InventoryRows * 8;
     public List<Field> Fields { get; } = [];
     public List<InventoryItem> Items { get; } = [];
     private readonly List<(int Start, int Length, Func<byte[]> Encode)> regions = [];
@@ -88,7 +90,7 @@ public sealed class SaveFile
         int inventoryEnd = Pos(r);
         regions.Add((inventoryStart, inventoryEnd - inventoryStart, () => Pack(w =>
         {
-            if (Items.Count > 32 || Items.Select(i => (i.X, i.Y)).Distinct().Count() != Items.Count || Items.Any(i => i.X is < 0 or > 7 || i.Y is < 0 or > 3))
+            if (Items.Count > InventorySlots || Items.Select(i => (i.X, i.Y)).Distinct().Count() != Items.Count || Items.Any(i => i.X is < 0 or > 7 || i.Y < 0 || i.Y >= InventoryRows))
                 throw new InvalidDataException("Invalid inventory slots.");
             w.Write((ushort)Items.Count);
             foreach (var item in Items)
@@ -101,7 +103,22 @@ public sealed class SaveFile
         })));
         Strings(r);
         StringValues(r);
-        for (int i = 0; i < 5; i++) Strings(r);
+        for (int i = 0; i < 5; i++)
+        {
+            var list = ReadStrings(r);
+            if (i == 2)
+            {
+                if (list.Contains("invrows 6") || list.Contains("invslot2")) InventoryRows = Math.Max(InventoryRows, 6);
+                else if (list.Contains("invrows 5") || list.Contains("invslot1")) InventoryRows = Math.Max(InventoryRows, 5);
+            }
+        }
+        if (Items.Count > 0)
+        {
+            int maxY = Items.Max(item => item.Y);
+            if (maxY >= 5) InventoryRows = Math.Max(InventoryRows, 6);
+            else if (maxY >= 4) InventoryRows = Math.Max(InventoryRows, 5);
+            else InventoryRows = Math.Max(InventoryRows, maxY + 1);
+        }
         int texts = Count(r);
         for (int i = 0; i < texts; i++) { r.ReadString(); r.ReadString(); }
         r.ReadString();
@@ -173,7 +190,7 @@ public sealed class SaveFile
 
     public void SetItem(int x, int y, ItemDefinition definition, int quantity, int quality)
     {
-        if (x is < 0 or > 7 || y is < 0 or > 3 || quantity < 1 || quantity > definition.MaxStack || quality < 1 || quality > definition.MaxQuality)
+        if (x is < 0 or > 7 || y < 0 || y >= InventoryRows || quantity < 1 || quantity > definition.MaxStack || quality < 1 || quality > definition.MaxQuality)
             throw new InvalidDataException("Item exceeds stack, quality or slot limits.");
         var existing = Items.Find(i => i.X == x && i.Y == y);
         if (existing?.Hash == definition.Hash && existing.Quantity?.Original.Length > 0 && existing.Quality != null)
@@ -198,7 +215,7 @@ public sealed class SaveFile
 
     public void MoveItem(int x, int y, int toX, int toY)
     {
-        if (toX is < 0 or > 7 || toY is < 0 or > 3) throw new InvalidDataException("Invalid destination slot.");
+        if (toX is < 0 or > 7 || toY < 0 || toY >= InventoryRows) throw new InvalidDataException("Invalid destination slot.");
         var item = Items.SingleOrDefault(i => i.X == x && i.Y == y);
         if (item == null) return;
         var other = Items.SingleOrDefault(i => i.X == toX && i.Y == toY);
@@ -263,6 +280,13 @@ public sealed class SaveFile
     {
         int count = Count(r);
         for (int i = 0; i < count; i++) r.ReadString();
+    }
+    private static List<string> ReadStrings(BinaryReader r)
+    {
+        int count = Count(r);
+        var list = new List<string>(count);
+        for (int i = 0; i < count; i++) list.Add(r.ReadString());
+        return list;
     }
     private static void StringValues(BinaryReader r)
     {
