@@ -39,7 +39,7 @@ public sealed class EditorForm : Form
     public EditorForm()
     {
         Text = "VALHEIM / Редактор персонажа";
-        Width = 1180; Height = 820; MinimumSize = new Size(1000, 650);
+        Width = 1180; Height = 880; MinimumSize = new Size(1000, 680);
         StartPosition = FormStartPosition.CenterScreen;
         Font = new Font("Segoe UI", 10);
         BackColor = Color.FromArgb(24, 29, 32); ForeColor = Color.FromArgb(232, 224, 203);
@@ -50,10 +50,9 @@ public sealed class EditorForm : Form
         toolbar.Controls.AddRange([open, export, undoButton, restoreButton, clearFlagsButton, nameLabel, characterName, theme, language]);
         var bottom = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 66 };
         bottom.Controls.Add(status);
-        foreach (string title in new[] { "Навыки", "Инвентарь" }) tabs.TabPages.Add(new TabPage(title) { BackColor = BackColor, ForeColor = ForeColor });
+        foreach (string title in new[] { "Навыки", "Инвентарь" }) tabs.TabPages.Add(new TabPage(title) { BackColor = BackColor, ForeColor = ForeColor, AutoScroll = true });
         tabs.TabPages[0].Controls.Add(skills); tabs.TabPages[1].Controls.Add(inventory);
         for (int i = 0; i < 8; i++) inventory.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
-        for (int i = 0; i < 4; i++) inventory.RowStyles.Add(new RowStyle(SizeType.Percent, 25));
         characterName.TextChanged += (_, _) =>
         {
             if (save == null || refreshing) return;
@@ -157,7 +156,11 @@ public sealed class EditorForm : Form
     {
         inventory.Controls.Clear();
         if (save == null) return;
-        for (int y = 0; y < 4; y++) for (int x = 0; x < 8; x++)
+        int rows = save.InventoryRows;
+        inventory.RowCount = rows;
+        inventory.RowStyles.Clear();
+        for (int i = 0; i < rows; i++) inventory.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / rows));
+        for (int y = 0; y < rows; y++) for (int x = 0; x < 8; x++)
         {
             int column = x, row = y;
             var item = save.Items.Find(i => i.X == x && i.Y == y);
