@@ -16,19 +16,21 @@ privileges or separate runtime installation are required at launch.
 
 - Russian/English interfaces, including item names, with a dark/light theme toggle.
 - Existing skills: synchronized slider and precise numeric input, levels 0-100.
-- Inventory: 8x4 clickable cells, searchable Russian names and prefab IDs.
+- Inventory: 8-wide grid that follows the save's `invrows` value (vanilla 4, expanded up to 8). Searchable Russian names and prefab IDs.
 - Extracted item icons in the grid and search list. Drag an item onto an
   empty slot to move it, or an occupied slot to swap, preserving metadata.
 - Category filters: weapons, armor, resources, food, other. Internal variants
   are hidden by default, with an optional toggle. This flag uses icon presence
   and technical-name heuristics; it is not an authoritative game classification.
-- Ctrl+Z or Undo reverses name, skill, item and movement edits. History is
-  cleared after opening, saving or restoring. Undo changes memory, not disk.
+- Ctrl+C copies a selected inventory slot; Ctrl+V pastes it. Click selects a
+  slot, double-click opens the item picker.
 - Restore backup opens a file picker for the currently opened local character.
   It validates format/checksum and character ID, confirms replacement, and
   backs up the current on-disk save before restoring. Close the game first.
-- Add, replace, edit or clear a slot. Stack and quality controls use actual
-  per-item limits extracted from the installed game's Unity assets.
+- Add, replace, edit or clear a slot. Stack limits come from the catalog.
+  Quality has three modes: catalog maximum, up to 99, and up to 999.
+- Item picker shows a left-hand stats panel: description, weight, food
+  health/stamina, and leveled damage/armor as `base (+bonus) = total`.
 - Replacing a different item requires confirmation and resets its metadata.
   New items have full durability and the game's cheated-item flag cleared.
   Editing an existing item of the same type preserves its other metadata.
@@ -38,6 +40,9 @@ privileges or separate runtime installation are required at launch.
   including unknown items, without changing other bits or metadata. Supports
   Ctrl+Z and requires saving to apply on disk. The separate profile-level
   cheat history and achievement eligibility are not changed.
+- World tab scans local `.chunk` world files, lists cheated containers, and
+  can clear those flags in place with backups. Old single-file `.db` worlds
+  and cheated items in `_main.*.db2` are not cleaned.
 - Some catalog entries are internal item variants. Check the prefab ID.
 - New skill creation and map editing are not implemented.
 

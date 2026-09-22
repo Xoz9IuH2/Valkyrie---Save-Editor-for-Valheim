@@ -22,6 +22,7 @@ public sealed class SaveFile
     private int playerLengthOffset;
     private int playerStart;
     public string Name { get; private set; } = "";
+    public int InventoryRows { get; private set; } = 4;
     public long PlayerId { get; }
     public int ProfileVersion { get; }
     public int PlayerVersion { get; private set; }
@@ -88,7 +89,7 @@ public sealed class SaveFile
         int inventoryEnd = Pos(r);
         regions.Add((inventoryStart, inventoryEnd - inventoryStart, () => Pack(w =>
         {
-            if (Items.Count > 32 || Items.Select(i => (i.X, i.Y)).Distinct().Count() != Items.Count || Items.Any(i => i.X is < 0 or > 7 || i.Y is < 0 or > 3))
+            if (Items.Count > InventoryRows * 8 || Items.Select(i => (i.X, i.Y)).Distinct().Count() != Items.Count || Items.Any(i => i.X is < 0 or > 7 || i.Y is < 0 || i.Y >= InventoryRows))
                 throw new InvalidDataException("Invalid inventory slots.");
             w.Write((ushort)Items.Count);
             foreach (var item in Items)
@@ -101,7 +102,15 @@ public sealed class SaveFile
         })));
         Strings(r);
         StringValues(r);
-        for (int i = 0; i < 5; i++) Strings(r);
+        for (int i = 0; i < 5; i++)
+        {
+            int count = Count(r);
+            for (int j = 0; j < count; j++)
+            {
+                string entry = r.ReadString();
+                if (entry.StartsWith("invrows ") && int.TryParse(entry[8..], out int rows) && rows is >= 1 and <= 8) InventoryRows = rows;
+            }
+        }
         int texts = Count(r);
         for (int i = 0; i < texts; i++) { r.ReadString(); r.ReadString(); }
         r.ReadString();
@@ -173,8 +182,9 @@ public sealed class SaveFile
 
     public void SetItem(int x, int y, ItemDefinition definition, int quantity, int quality)
     {
-        if (x is < 0 or > 7 || y is < 0 or > 3 || quantity < 1 || quantity > definition.MaxStack || quality < 1 || quality > definition.MaxQuality)
-            throw new InvalidDataException("Item exceeds stack, quality or slot limits.");
+        int maxQuality = QualityMode.MaxQuality(definition);
+        if (x is < 0 or > 7 || y is < 0 || y >= InventoryRows || quantity < 1 || quantity > definition.MaxStack || quality < 1 || quality > maxQuality)
+            throw new InvalidDataException($"Item exceeds stack, slot limits or the current quality mode (max quality {maxQuality}).");
         var existing = Items.Find(i => i.X == x && i.Y == y);
         if (existing?.Hash == definition.Hash && existing.Quantity?.Original.Length > 0 && existing.Quality != null)
         {
@@ -198,12 +208,46 @@ public sealed class SaveFile
 
     public void MoveItem(int x, int y, int toX, int toY)
     {
-        if (toX is < 0 or > 7 || toY is < 0 or > 3) throw new InvalidDataException("Invalid destination slot.");
+        if (toX is < 0 or > 7 || toY is < 0 || toY >= InventoryRows) throw new InvalidDataException("Invalid destination slot.");
         var item = Items.SingleOrDefault(i => i.X == x && i.Y == y);
         if (item == null) return;
         var other = Items.SingleOrDefault(i => i.X == toX && i.Y == toY);
         if (other != null) { other.X = x; other.Y = y; }
         item.X = toX; item.Y = toY;
+    }
+
+    public void PasteItem(int x, int y, byte[] snapshot)
+    {
+        if (x is < 0 or > 7 || y is < 0 || y >= InventoryRows) throw new InvalidDataException("Invalid destination slot.");
+        if (snapshot.Length < 9) throw new InvalidDataException("Clipboard item data is incomplete.");
+        byte[] bytes = snapshot.ToArray();
+        bytes[4] = (byte)x; bytes[5] = (byte)y;
+        using var r = new BinaryReader(new MemoryStream(bytes));
+        r.ReadInt32();
+        r.ReadByte(); r.ReadByte(); r.ReadByte();
+        byte flags = r.ReadByte();
+        int quality = (flags & 4) != 0 ? r.ReadUInt16() : 1;
+        int stack = (flags & 8) != 0 ? r.ReadUInt16() : 1;
+        if ((flags & 16) != 0) r.ReadInt32();
+        if ((flags & 32) != 0) { r.ReadInt64(); r.ReadString(); }
+        int hash = (flags & 64) != 0 ? r.ReadInt32() : 0;
+        int custom = 0;
+        if ((flags & 128) != 0)
+        {
+            custom = r.ReadByte();
+            if ((custom & 128) != 0) custom = ((custom & 127) << 8) | r.ReadByte();
+        }
+        for (int j = 0; j < custom; j++) { r.ReadString(); r.ReadString(); }
+        bool cheated = (r.ReadByte() & 1) != 0;
+        if (r.BaseStream.Position != bytes.Length) throw new InvalidDataException("Clipboard item data is incomplete.");
+        Items.RemoveAll(i => i.X == x && i.Y == y);
+        Items.Add(new InventoryItem
+        {
+            X = x, Y = y, Hash = hash, Cheated = cheated,
+            Quantity = new Field { Value = stack.ToString() },
+            Quality = new Field { Value = quality.ToString() },
+            Encode = () => bytes
+        });
     }
 
     private Field Add(string section, string name, string value, int start, int length, Func<string, byte[]> encode)

@@ -22,6 +22,7 @@ public sealed class RangeInput : UserControl
 public sealed class ItemPicker : Form
 {
     private readonly ListBox list = new() { Dock = DockStyle.Fill, IntegralHeight = false };
+    private readonly Panel stats = new() { Dock = DockStyle.Left, Width = 280, Padding = new Padding(12), AutoScroll = true, Tag = "surface" };
     private readonly FlowLayoutPanel settings = new() { Dock = DockStyle.Right, Width = 310, Padding = new Padding(16), FlowDirection = FlowDirection.TopDown, WrapContents = false };
     private RangeInput? amount, level;
     private readonly InventoryItem? existing;
@@ -38,16 +39,16 @@ public sealed class ItemPicker : Form
     {
         existing = item;
         Text = item == null ? T("Добавить предмет", "Add item") : T("Изменить ячейку", "Edit slot");
-        Width = 980; Height = 680; MinimumSize = new Size(850, 550); StartPosition = FormStartPosition.CenterParent;
-        Font = new Font("Segoe UI", 10); BackColor = Color.FromArgb(24, 29, 32); ForeColor = Color.FromArgb(232, 224, 203);
-        var search = new TextBox { Dock = DockStyle.Top, PlaceholderText = T("Поиск по названию или ID: железо, SwordIron...", "Search by name or ID: iron, SwordIron...") };
-        list.BackColor = Color.FromArgb(35, 42, 45); list.ForeColor = ForeColor;
-        var actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 65, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(8) };
-        var apply = EditorForm.MakeButton(T("Применить", "Apply"));
+        Width = 1180; Height = 720; MinimumSize = new Size(980, 580); StartPosition = FormStartPosition.CenterParent;
+        Font = BodyFont; BackColor = Background; ForeColor = TextColor;
+        var search = new TextBox { Dock = DockStyle.Top, Height = 32, PlaceholderText = T("Поиск по названию или ID: железо, SwordIron...", "Search by name or ID: iron, SwordIron...") };
+        list.Tag = "surface"; stats.Tag = "raised"; settings.Tag = "raised";
+        var actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 64, FlowDirection = FlowDirection.RightToLeft, Padding = new Padding(12, 10, 12, 10) };
+        var apply = EditorForm.MakeButton(T("Применить", "Apply")); apply.Tag = "accent-fill";
         var cancel = EditorForm.MakeButton(T("Отмена", "Cancel")); cancel.DialogResult = DialogResult.Cancel;
         var remove = EditorForm.MakeButton(T("Очистить ячейку", "Clear slot")); remove.Enabled = item != null;
         actions.Controls.AddRange([apply, cancel, remove]);
-        Controls.Add(list); Controls.Add(settings); Controls.Add(search); Controls.Add(actions);
+        Controls.Add(list); Controls.Add(stats); Controls.Add(settings); Controls.Add(search); Controls.Add(actions);
         var filters = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42 };
         category.Items.AddRange(English ? ["All", "Weapons", "Armor", "Resources", "Food", "Other"] : ["Все", "Оружие", "Броня", "Ресурсы", "Еда", "Прочее"]);
         category.SelectedIndex = 0;
@@ -62,10 +63,16 @@ public sealed class ItemPicker : Form
         {
             if (e.Index < 0) return;
             e.DrawBackground();
+            if ((e.State & DrawItemState.Selected) != 0)
+            {
+                using var fill = new SolidBrush(Raised);
+                e.Graphics.FillRectangle(fill, e.Bounds);
+            }
             var entry = (ItemDefinition)list.Items[e.Index];
             var icon = Catalog.ImageFor(entry);
-            if (icon != null) e.Graphics.DrawImage(icon, new Rectangle(e.Bounds.X + 4, e.Bounds.Y + 4, 48, 48));
-            TextRenderer.DrawText(e.Graphics, entry.ToString(), list.Font, new Rectangle(e.Bounds.X + 60, e.Bounds.Y, e.Bounds.Width - 60, e.Bounds.Height), e.ForeColor, TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
+            if (icon != null) e.Graphics.DrawImage(icon, new Rectangle(e.Bounds.X + 10, e.Bounds.Y + 4, 48, 48));
+            TextRenderer.DrawText(e.Graphics, entry.DisplayName, HeadingFont, new Rectangle(e.Bounds.X + 68, e.Bounds.Y + 6, e.Bounds.Width - 80, 28), TextColor, TextFormatFlags.EndEllipsis);
+            TextRenderer.DrawText(e.Graphics, entry.Prefab, BodyFont, new Rectangle(e.Bounds.X + 68, e.Bounds.Y + 30, e.Bounds.Width - 80, 22), Muted, TextFormatFlags.EndEllipsis);
             e.DrawFocusRectangle();
         };
         CancelButton = cancel;
@@ -105,22 +112,45 @@ public sealed class ItemPicker : Form
 
     private void ShowSettings()
     {
-        settings.Controls.Clear(); amount = null; level = null;
-        if (Selection is not { } definition) return;
-        settings.Controls.Add(new Label { Text = definition.DisplayName + "\n\n" + definition.Prefab, Width = 270, Height = 100 });
+        settings.Controls.Clear(); stats.Controls.Clear(); amount = null; level = null;
+        if (Selection is not { } definition) { Appearance.Apply(settings); return; }
+        settings.Controls.Add(new Label { Text = definition.DisplayName, Width = 270, Height = 28, Font = HeadingFont, Tag = "accent" });
+        settings.Controls.Add(new Label { Text = definition.Prefab, Width = 270, Height = 22, Tag = "muted" });
         bool same = definition.Hash == existing?.Hash;
         int quantity = same && int.TryParse(existing?.Quantity?.Value, out int n) ? n : 1;
         int quality = same && int.TryParse(existing?.Quality?.Value, out int q) ? q : 1;
+        int maxQuality = QualityMode.MaxQuality(definition);
+        if (quality > maxQuality) quality = maxQuality;
         settings.Controls.Add(new Label { Text = T("Количество · максимум ", "Quantity · maximum ") + definition.MaxStack, AutoSize = true });
         amount = new RangeInput(1, definition.MaxStack, quantity) { Width = 270 };
         settings.Controls.Add(amount);
-        if (definition.MaxQuality > 1)
+        if (maxQuality > 1)
         {
-            settings.Controls.Add(new Label { Text = T("Уровень · максимум ", "Level · maximum ") + definition.MaxQuality, AutoSize = true, Margin = new Padding(3, 24, 3, 3) });
-            level = new RangeInput(1, definition.MaxQuality, quality) { Width = 270 };
+            settings.Controls.Add(new Label { Text = T("Уровень · максимум ", "Level · maximum ") + maxQuality, AutoSize = true, Margin = new Padding(3, 24, 3, 3) });
+            level = new RangeInput(1, maxQuality, Math.Min(quality, maxQuality)) { Width = 270 };
             settings.Controls.Add(level);
         }
-        settings.Controls.Add(new Label { Text = T("Лимиты взяты из установленной игры.\n\nКаталог содержит также служебные варианты предметов. Проверяйте ID перед добавлением.", "Limits come from the installed game.\n\nThe catalog also includes internal item variants. Check the ID before adding."), Width = 270, Height = 140, Margin = new Padding(3, 24, 3, 3) });
+        amount.Changed += _ => RenderStats();
+        if (level != null) level.Changed += _ => RenderStats();
+        string warning = definition.MaxQuality > 1 && QualityMode.Level != QualityLevel.Catalog
+            ? T("Значения выше игрового максимума не проверены.", "Values above the in-game maximum are unverified.") + "\n\n"
+            : "";
+        settings.Controls.Add(new Label { Text = warning + T("Лимиты взяты из установленной игры.\n\nКаталог содержит также служебные варианты предметов. Проверяйте ID перед добавлением.", "Limits come from the installed game.\n\nThe catalog also includes internal item variants. Check the ID before adding."), Width = 270, Height = 140, Margin = new Padding(3, 24, 3, 3) });
         Appearance.Apply(settings);
+        RenderStats();
+    }
+
+    private void RenderStats()
+    {
+        stats.Controls.Clear();
+        if (Selection is not { } definition) return;
+        string description = English ? definition.EnglishDescription : definition.Description;
+        var panel = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, FlowDirection = FlowDirection.TopDown, WrapContents = false, Width = 244 };
+        panel.Controls.Add(new Label { Text = T("Характеристики", "Stats"), AutoSize = true, Tag = "accent", Font = HeadingFont });
+        panel.Controls.Add(new Label { Text = string.IsNullOrWhiteSpace(description) ? definition.DisplayName : description, Width = 244, Height = 90 });
+        foreach (var (label, value) in definition.Stats(Quality, Quantity))
+            panel.Controls.Add(new Label { Text = label + ":  " + value, Width = 244, Height = 22 });
+        stats.Controls.Add(panel);
+        Appearance.Apply(stats);
     }
 }

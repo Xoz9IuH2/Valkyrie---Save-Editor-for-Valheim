@@ -21,12 +21,15 @@ The Nexus file is currently marked as suspicious pending a manual review. Until 
 ### Features
 
 - Edit character names and existing skill levels using sliders or precise numeric input.
-- Manage an 8×4 inventory with item icons, search and category filters.
-- Add, replace or remove items with per-item stack and quality limits.
+- Manage an inventory grid that follows the save (vanilla 8×4, expanded up to 8 rows).
+- Add, replace or remove items with catalog stack limits and three quality modes: catalog, up to 99, up to 999.
+- See item stats while picking: description, weight, food values, and leveled damage/armor.
+- Copy and paste inventory slots with **Ctrl+C** / **Ctrl+V**. Click selects a slot; double-click opens it.
 - Drag items to empty slots or swap items between occupied slots.
 - Hide internal item variants by default, with an option to show them.
 - Undo edits with **Ctrl+Z** or the Undo button.
 - Clear inventory item cheat flags. Newly added items have this flag cleared.
+- Scan local world `.chunk` files and clear cheated-item flags in containers, with backups.
 - Save directly to the local character folder with automatic backups.
 - Restore a backup after checking its format, checksum and character ID.
 
@@ -43,7 +46,7 @@ The Nexus file is currently marked as suspicious pending a manual review. Until 
 2. If a compiled version is available under [Releases](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases), extract the **entire archive**. Otherwise, build from source using the commands below.
 3. Launch `Editor.exe`. The standalone version is one file: .NET, the catalog and icons are included. On first launch, native runtime components may be extracted automatically into the user's temporary directory.
 4. Click **Open character** and select a `.fch` file.
-5. Use **Skills** to change existing skill levels. Use **Inventory** to select, add, edit, move or remove items.
+5. Use **Skills** to change existing skill levels. On **Inventory**, click a slot to select it, double-click to edit, or drag items. Use **World** to scan local worlds for cheated container items.
 6. Click **Save to game** and confirm the replacement. The game must be closed.
 
 The default local save folder is resolved for the current Windows user:
@@ -122,12 +125,15 @@ For bug reports, use [GitHub Issues](https://github.com/Xoz9IuH2/Valkyrie---Save
 ### Возможности
 
 - Изменение имени персонажа и имеющихся навыков ползунком или точным числом.
-- Инвентарь 8×4 с иконками, поиском и фильтрами категорий.
-- Добавление, замена и удаление предметов с ограничениями размера стака и уровня.
+- Инвентарь по размеру сейва: обычный 8×4, расширенный до 8 строк.
+- Добавление, замена и удаление предметов с лимитом стака из каталога и тремя режимами качества: каталог, до 99, до 999.
+- Характеристики предмета при выборе: описание, вес, еда, урон и броня с бонусом уровня.
+- Копирование и вставка ячеек через **Ctrl+C** / **Ctrl+V**. Клик выбирает ячейку, двойной клик открывает её.
 - Перетаскивание в пустую ячейку или обмен предметами между занятыми ячейками.
 - Скрытие служебных вариантов предметов с возможностью включить их отображение.
 - Отмена правок через **Ctrl+Z** или кнопку отмены.
 - Очистка чит-флагов предметов инвентаря. Новые предметы добавляются без этого флага.
+- Анализ локальных файлов мира `.chunk` и снятие чит-флагов в контейнерах с резервными копиями.
 - Сохранение прямо в папку персонажей с автоматическим резервированием.
 - Восстановление копий с проверкой формата, контрольной суммы и ID персонажа.
 
@@ -144,7 +150,7 @@ For bug reports, use [GitHub Issues](https://github.com/Xoz9IuH2/Valkyrie---Save
 2. Если готовая сборка опубликована в [Releases](https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases), распакуйте **весь архив**. Иначе соберите программу по инструкции ниже.
 3. Запустите `Editor.exe`. Автономная версия состоит из одного файла: .NET, каталог и иконки уже встроены. При первом запуске нативные компоненты среды выполнения могут автоматически распаковаться во временную папку пользователя.
 4. Нажмите **«Открыть персонажа»** и выберите файл `.fch`.
-5. Меняйте уровни на вкладке **«Навыки»**. На вкладке **«Инвентарь»** нажмите на ячейку для выбора предмета или перетащите предмет в другую ячейку.
+5. Меняйте уровни на вкладке **«Навыки»**. На вкладке **«Инвентарь»** клик выбирает ячейку, двойной клик открывает предмет. Вкладка **«Мир»** ищет чит-флаги в контейнерах локального мира.
 6. Нажмите **«Сохранить в игру»** и подтвердите замену. Игра должна быть закрыта.
 
 Папка локальных персонажей определяется для текущего пользователя Windows:

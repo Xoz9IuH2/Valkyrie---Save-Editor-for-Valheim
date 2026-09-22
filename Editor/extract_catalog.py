@@ -71,6 +71,15 @@ for obj in env.objects:
         ('_attack', '_shoot', 'test', 'debug', 'projectile')) or (
         category == 'Weapons' and go.m_Name.lower().startswith(('dverger', 'charred', 'draugr', 'skeleton', 'goblin')))
     items.append({'Prefab': go.m_Name, 'Name': translations.get(shared['m_name'], go.m_Name),
+                  'Description': translations.get(shared['m_description'], shared['m_description']),
+                  'EnglishDescription': english.get(shared['m_description'], shared['m_description']),
+                  'Weight': shared['m_weight'], 'ScaleWeightByQuality': shared['m_scaleWeightByQuality'],
+                  'Damages': shared['m_damages'], 'DamagesPerLevel': shared['m_damagesPerLevel'],
+                  'Armor': shared['m_armor'], 'ArmorPerLevel': shared['m_armorPerLevel'],
+                  'Block': shared['m_blockPower'], 'BlockPerLevel': shared['m_blockPowerPerLevel'],
+                  'FoodHealth': shared['m_food'], 'FoodStamina': shared['m_foodStamina'],
+                  'FoodEitr': shared['m_foodEitr'], 'FoodDuration': shared['m_foodBurnTime'],
+                  'FoodRegen': shared['m_foodRegen'], 'UseDurability': shared['m_useDurability'],
                   'Category': category, 'Internal': internal, 'Icon': icon_name,
                   'EnglishName': english.get(shared['m_name'], go.m_Name),
                   'MaxStack': shared['m_maxStackSize'], 'MaxQuality': shared['m_maxQuality'],

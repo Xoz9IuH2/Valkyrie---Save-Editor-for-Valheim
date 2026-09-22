@@ -6,7 +6,7 @@ Create two separate guides so each has the correct language selection.
 2. Use GUIDE-RU.txt for the Russian guide and GUIDE-EN.txt for the English guide.
 3. Enter the title and short description separately. Only paste the BODY / ОСНОВНОЙ ТЕКСТ section into guide content. Each h1 can instead become a separate Steam guide section.
 4. Choose the corresponding language and relevant available categories, such as Modding or Configuration. Do not claim this is an official guide.
-5. Add a guide image and actual application screenshots: skills, inventory, item picker, backup controls. Avoid exposing personal paths or private save details.
+5. Add a guide image and actual application screenshots: header, skills, inventory, item stats panel, world tab. Avoid exposing personal paths or private save details.
 6. Preview Steam markup and links before publishing. Steam may show notices on external links.
 7. Keep the antivirus-review notice accurate. The Nexus archive is currently quarantined; a manual review was requested. Do not remove this context or call the detections confirmed false positives without supporting results.
 8. After both guides are published, add links between the two language versions if desired.

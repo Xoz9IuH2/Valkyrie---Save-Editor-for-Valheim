@@ -43,7 +43,7 @@ Press Win+R and open:
 
 Copy the character's .fch file to a separate backup folder outside characters_local. Do not keep multiple active copies of the same character in the game folder.
 
-Launch Editor.exe, click [b]Open character[/b] and select the original local .fch file.
+Launch Editor.exe, click [b]Open[/b] and select the original local .fch file.
 
 [h1]2. Edit Skills[/h1]
 On the [b]Skills[/b] tab, use a slider or the adjacent numeric input to set a level from 0 to 100.
@@ -51,34 +51,38 @@ On the [b]Skills[/b] tab, use a slider or the adjacent numeric input to set a le
 Only skills already present in the save are listed. Adding missing skills is not implemented yet.
 
 [h1]3. Manage Inventory[/h1]
-Click a cell on the [b]Inventory[/b] tab to open the item picker.
+A single click selects a slot. Double-click opens the item picker.
 [list]
 [*]Search by English/Russian name or prefab ID, such as SwordIron.
 [*]Filter by weapons, armor, resources, food or other items.
+[*]The left panel shows stats: description, weight, food values, and damage/armor. Leveled stats appear as 10 (+20) = 30.
 [*]Set quantity with the slider or numeric input, within the catalog stack limit.
-[*]For items with upgrade levels, choose a level within their maximum quality.
+[*]Quality modes: catalog maximum, up to 99, or up to 999. Values above the in-game maximum are unverified.
 [*]Click Apply. Replacing a different item requires confirmation and resets its previous properties.
 [*]Use Clear slot to delete an item.
 [/list]
 Drag an item onto an empty cell to move it. Dropping onto an occupied cell swaps the two items.
+[b]Ctrl+C[/b] copies the selected slot; [b]Ctrl+V[/b] pastes it. Occupied slots ask for confirmation.
 
-Internal variants are hidden by default. This classification is heuristic, so check the prefab ID carefully, especially when showing internal items.
+The grid follows the save: vanilla 8x4, expanded inventories up to 8 rows. Internal variants are hidden by default. This classification is heuristic, so check the prefab ID carefully, especially when showing internal items.
 
 [h1]4. Undo And Item Flags[/h1]
 [b]Ctrl+Z[/b] or Undo reverses an edit in memory. Opening, saving or restoring a file clears the undo history.
 
-[b]Clear item cheat flags[/b] removes that marker from inventory items. Newly added items do not carry the marker. This does not clear profile-level cheat history or guarantee achievement eligibility.
+[b]Clear cheat flags[/b] removes that marker from inventory items. Newly added items do not carry the marker. This does not clear profile-level cheat history or guarantee achievement eligibility.
 
-Use edited characters in your own game; agree with the owner and other players before using them on someone else's server.
+[h1]5. Clean World Cheat Flags[/h1]
+On the [b]World[/b] tab, select a local world, click Analyze world, then Clear cheat flags and Save world.
+The editor only patches cheated items in .chunk container files and writes backups. Old single-file .db worlds and cheated items in _main.*.db2 are not cleaned. Close the game before saving.
 
-[h1]5. Save Changes[/h1]
-Make sure Valheim is closed. Click [b]Save to game[/b] and confirm the destination.
+[h1]6. Save Changes[/h1]
+Make sure Valheim is closed. Click [b]Save[/b] and confirm the destination.
 
 The editor saves into characters_local using the original filename. The previous file is retained in the [b]Backups[/b] subfolder. If the file changed externally after opening, saving is rejected; reopen the current file instead.
 
 Launch Valheim and check your character after saving. Keep your independent backup until you have verified the result.
 
-[h1]6. Restore A Backup[/h1]
+[h1]7. Restore A Backup[/h1]
 [list=1]
 [*]Close Valheim and open the local character in the editor.
 [*]Click Restore backup.

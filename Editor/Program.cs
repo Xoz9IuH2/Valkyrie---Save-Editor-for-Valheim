@@ -32,26 +32,45 @@ public sealed class EditorForm : Form
     private readonly Button clearFlagsButton = MakeButton("");
     private readonly Button open = MakeButton("");
     private readonly Button export = MakeButton("");
+    private readonly WorldTab worldTab = new();
+    private readonly ComboBox qualityMode = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 150 };
+    private byte[]? clipboard;
+    private (int X, int Y)? selectedSlot;
+    private readonly Label qualityModeLabel = new() { AutoSize = true, Padding = new Padding(15, 10, 4, 0) };
     private readonly Label nameLabel = new() { AutoSize = true, Padding = new Padding(15, 10, 4, 0) };
     private readonly CheckBox theme = new() { Appearance = System.Windows.Forms.Appearance.Button, AutoSize = true, Checked = true, MinimumSize = new Size(155, 38), FlatStyle = FlatStyle.Flat };
     private readonly string saveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "IronGate", "Valheim", "characters_local");
 
     public EditorForm()
     {
-        Text = "VALHEIM / Редактор персонажа";
-        Width = 1180; Height = 820; MinimumSize = new Size(1000, 650);
+        Text = T("VALKYRIE", "VALKYRIE");
+        Width = 1280; Height = 860; MinimumSize = new Size(1080, 700);
         StartPosition = FormStartPosition.CenterScreen;
-        Font = new Font("Segoe UI", 10);
-        BackColor = Color.FromArgb(24, 29, 32); ForeColor = Color.FromArgb(232, 224, 203);
-        var toolbar = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 165, Padding = new Padding(18) };
-        var language = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 100 };
+        Font = BodyFont;
+        BackColor = Background; ForeColor = TextColor;
+        var header = new Panel { Dock = DockStyle.Top, Height = 156, Padding = new Padding(20, 16, 20, 10) };
+        var brand = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 42, WrapContents = false };
+        var mark = new Label { Text = "◆", AutoSize = true, Tag = "accent", Font = TitleFont, Padding = new Padding(0, 0, 8, 0) };
+        var brandTitle = new Label { Text = "VALKYRIE", AutoSize = true, Font = TitleFont, Tag = "accent" };
+        var subtitle = new Label { AutoSize = true, Tag = "muted", Padding = new Padding(12, 12, 0, 0), Text = T("редактор персонажа", "character editor") };
+        brand.Controls.AddRange([mark, brandTitle, subtitle]);
+        var toolbar = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = true, Padding = new Padding(0, 4, 0, 0) };
+        var language = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110, FlatStyle = FlatStyle.Flat };
         language.Items.AddRange(["Русский", "English"]); language.SelectedIndex = English ? 1 : 0;
         theme.Checked = Dark;
-        toolbar.Controls.AddRange([open, export, undoButton, restoreButton, clearFlagsButton, nameLabel, characterName, theme, language]);
-        var bottom = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 66 };
+        export.Tag = "accent-fill";
+        toolbar.Controls.AddRange([open, export, undoButton, restoreButton, clearFlagsButton, qualityModeLabel, qualityMode, nameLabel, characterName, theme, language]);
+        header.Controls.Add(toolbar);
+        header.Controls.Add(brand);
+        var bottom = new Panel { Dock = DockStyle.Bottom, Height = 52, Padding = new Padding(20, 8, 20, 8) };
+        status.Dock = DockStyle.Fill; status.Tag = "muted";
         bottom.Controls.Add(status);
-        foreach (string title in new[] { "Навыки", "Инвентарь" }) tabs.TabPages.Add(new TabPage(title) { BackColor = BackColor, ForeColor = ForeColor });
-        tabs.TabPages[0].Controls.Add(skills); tabs.TabPages[1].Controls.Add(inventory);
+        foreach (string title in new[] { "Навыки", "Инвентарь", "Мир" }) tabs.TabPages.Add(new TabPage(title) { BackColor = BackColor, ForeColor = ForeColor });
+        worldTab.Dock = DockStyle.Fill;
+        tabs.TabPages[0].Controls.Add(skills); tabs.TabPages[1].Controls.Add(inventory); tabs.TabPages[2].Controls.Add(worldTab);
+        qualityMode.Items.AddRange([T("Качество: каталог", "Quality: catalog"), T("Качество: до 99", "Quality: up to 99"), T("Качество: до 999", "Quality: up to 999")]);
+        qualityMode.SelectedIndex = 0;
+        qualityMode.SelectedIndexChanged += (_, _) => { QualityMode.Level = (QualityLevel)qualityMode.SelectedIndex; RenderInventory(); };
         for (int i = 0; i < 8; i++) inventory.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
         for (int i = 0; i < 4; i++) inventory.RowStyles.Add(new RowStyle(SizeType.Percent, 25));
         characterName.TextChanged += (_, _) =>
@@ -61,7 +80,7 @@ public sealed class EditorForm : Form
             Remember(() => field.Value = previous);
             field.Value = characterName.Text; dirty = true;
         };
-        Controls.Add(tabs); Controls.Add(toolbar); Controls.Add(bottom);
+        Controls.Add(tabs); Controls.Add(header); Controls.Add(bottom);
         open.Click += (_, _) => Guard(Open);
         export.Click += (_, _) => Guard(Export);
         undoButton.Click += (_, _) => Guard(Undo);
@@ -73,8 +92,8 @@ public sealed class EditorForm : Form
         RefreshInterface();
     }
 
-    internal static Button MakeButton(string text) => new() { Text = text, AutoSize = true, MinimumSize = new Size(160, 40), FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(47, 58, 61), ForeColor = Color.FromArgb(238, 214, 157), Margin = new Padding(5), Padding = new Padding(5) };
-    private bool CanDiscard() => !dirty || MessageBox.Show(T("Отменить несохранённые изменения?", "Discard unsaved changes?"), Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+    internal static Button MakeButton(string text) => new() { Text = text, AutoSize = true, MinimumSize = new Size(148, 36), FlatStyle = FlatStyle.Flat, Margin = new Padding(0, 0, 8, 8), Padding = new Padding(10, 4, 10, 4) };
+    private bool CanDiscard() => !(dirty || worldTab.Dirty) || MessageBox.Show(T("Отменить несохранённые изменения?", "Discard unsaved changes?"), Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
     private void Open()
     {
         if (!CanDiscard()) return;
@@ -93,16 +112,18 @@ public sealed class EditorForm : Form
         refreshing = true;
         try
         {
-        Text = T("VALHEIM / Редактор персонажа", "VALHEIM / Character editor");
-        open.Text = T("Открыть персонажа", "Open character");
-        export.Text = T("Сохранить в игру", "Save to game");
-        undoButton.Text = T("Отменить · Ctrl+Z", "Undo · Ctrl+Z"); undoButton.Enabled = undo.Count > 0;
-        restoreButton.Text = T("Восстановить копию", "Restore backup");
-        clearFlagsButton.Text = T("Очистить чит-флаги", "Clear item cheat flags");
+        Text = T("VALKYRIE", "VALKYRIE");
+        open.Text = T("Открыть", "Open");
+        export.Text = T("Сохранить", "Save");
+        undoButton.Text = T("Отменить  Ctrl+Z", "Undo  Ctrl+Z"); undoButton.Enabled = undo.Count > 0;
+        restoreButton.Text = T("Восстановить", "Restore");
+        clearFlagsButton.Text = T("Снять чит-флаги", "Clear cheat flags");
+        qualityModeLabel.Text = T("Качество", "Quality");
+        qualityMode.SelectedIndex = (int)QualityMode.Level;
         clearFlagsButton.Enabled = save?.Items.Any(i => i.Cheated) == true;
-        nameLabel.Text = T("Имя персонажа", "Character name");
-        theme.Text = Dark ? T("Тема: тёмная", "Theme: dark") : T("Тема: светлая", "Theme: light");
-        tabs.TabPages[0].Text = T("Навыки", "Skills"); tabs.TabPages[1].Text = T("Инвентарь", "Inventory");
+        nameLabel.Text = T("Имя", "Name");
+        theme.Text = Dark ? T("Тёмная тема", "Dark theme") : T("Светлая тема", "Light theme");
+        tabs.TabPages[0].Text = T("Навыки", "Skills"); tabs.TabPages[1].Text = T("Инвентарь", "Inventory"); tabs.TabPages[2].Text = T("Мир", "World"); worldTab.RefreshTexts();
         status.Text = T("Сохранение в characters_local с резервной копией. Перед сохранением закройте игру.", "Saves to characters_local with a backup. Close the game before saving.");
         if (save == null) { Appearance.Apply(this); return; }
         characterName.Text = save.Fields[0].Value;
@@ -110,16 +131,16 @@ public sealed class EditorForm : Form
         skills.Controls.Clear();
         foreach (var field in save.Fields.Where(f => f.Section == "Skills"))
         {
-            var row = new FlowLayoutPanel { Width = 850, Height = 70, BackColor = Color.FromArgb(35, 42, 45), Padding = new Padding(12), Margin = new Padding(0, 0, 0, 8) };
-            row.Controls.Add(new Label { Text = SkillLabel(field.Name), Width = 220, Height = 35, TextAlign = ContentAlignment.MiddleLeft });
-            var range = new RangeInput(0, 100, decimal.Parse(field.Value, System.Globalization.CultureInfo.InvariantCulture), 2) { Width = 550 };
+            var row = new Panel { Width = 920, Height = 64, Tag = "raised", Padding = new Padding(16, 10, 16, 10), Margin = new Padding(0, 0, 0, 10) };
+            var label = new Label { Text = SkillLabel(field.Name), Width = 210, Height = 40, TextAlign = ContentAlignment.MiddleLeft, Font = HeadingFont };
+            var range = new RangeInput(0, 100, decimal.Parse(field.Value, System.Globalization.CultureInfo.InvariantCulture), 2) { Width = 660, Dock = DockStyle.Right };
             range.Changed += value =>
             {
                 string previous = field.Value;
                 Remember(() => field.Value = previous);
                 field.Value = value.ToString(System.Globalization.CultureInfo.InvariantCulture); dirty = true;
             };
-            row.Controls.Add(range); skills.Controls.Add(row);
+            row.Controls.Add(range); row.Controls.Add(label); skills.Controls.Add(row);
         }
         RenderInventory();
         Appearance.Apply(this);
@@ -157,21 +178,31 @@ public sealed class EditorForm : Form
     {
         inventory.Controls.Clear();
         if (save == null) return;
-        for (int y = 0; y < 4; y++) for (int x = 0; x < 8; x++)
+        int rows = save.InventoryRows;
+        inventory.RowCount = rows;
+        while (inventory.RowStyles.Count < rows) inventory.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / rows));
+        for (int i = 0; i < rows; i++) inventory.RowStyles[i] = new RowStyle(SizeType.Percent, 100f / rows);
+        for (int y = 0; y < rows; y++) for (int x = 0; x < 8; x++)
         {
             int column = x, row = y;
             var item = save.Items.Find(i => i.X == x && i.Y == y);
             var definition = item == null ? null : Catalog.Find(item.Hash);
-            var cell = MakeButton(item == null ? $"{x + 1}:{y + 1}\n\n+ {T("Добавить", "Add")}" : $"{x + 1}:{y + 1}\n{definition?.DisplayName ?? $"ID {item.Hash}"}\n×{item.Quantity?.Value}  /  {T("ур.", "lvl")} {item.Quality?.Value}");
-            cell.AutoSize = false; cell.MinimumSize = Size.Empty; cell.Dock = DockStyle.Fill;
+            var cell = MakeButton(item == null ? T("Пусто", "Empty") : $"{definition?.DisplayName ?? $"ID {item.Hash}"}\n{T("ур.", "lvl")} {item.Quality?.Value}  ×{item.Quantity?.Value}");
+            cell.AutoSize = false; cell.MinimumSize = Size.Empty; cell.Dock = DockStyle.Fill; cell.Margin = new Padding(5);
             cell.Image = Catalog.ImageFor(definition);
             cell.ImageAlign = ContentAlignment.TopCenter;
             cell.TextAlign = ContentAlignment.BottomCenter;
             cell.TextImageRelation = TextImageRelation.ImageAboveText;
+            cell.Tag = item == null ? "surface" : "raised";
             cell.AllowDrop = true;
             Point dragStart = Point.Empty;
             bool dragging = false;
-            cell.MouseDown += (_, e) => { dragStart = e.Location; dragging = false; };
+            cell.MouseDown += (_, e) =>
+            {
+                selectedSlot = (column, row);
+                HighlightSelection();
+                dragStart = e.Location; dragging = false;
+            };
             cell.MouseMove += (_, e) =>
             {
                 if (item == null || e.Button != MouseButtons.Left || dragging) return;
@@ -189,10 +220,18 @@ public sealed class EditorForm : Form
                 save.MoveItem(oldX, oldY, column, row);
                 dirty = true; RenderInventory();
             });
-            cell.BackColor = item == null ? Color.FromArgb(29, 36, 39) : Color.FromArgb(48, 57, 58);
-            cell.Click += (_, _) => Guard(() =>
+            cell.Tag = item == null ? "surface" : "raised";
+            if (selectedSlot == (column, row)) cell.FlatAppearance.BorderColor = Accent;
+            cell.GotFocus += (_, _) => selectedSlot = (column, row);
+            cell.Click += (_, _) =>
+            {
+                selectedSlot = (column, row);
+                HighlightSelection();
+            };
+            cell.DoubleClick += (_, _) => Guard(() =>
             {
                 if (dragging) { dragging = false; return; }
+                selectedSlot = (column, row);
                 using var picker = new ItemPicker(item);
                 if (picker.ShowDialog(this) != DialogResult.OK) return;
                 var previous = save.Items.ToArray();
@@ -204,13 +243,31 @@ public sealed class EditorForm : Form
                     if (item?.Quality != null && quality != null) item.Quality.Value = quality;
                 });
                 if (picker.Delete) save.Items.RemoveAll(i => i.X == column && i.Y == row);
-                else save.SetItem(column, row, picker.Selection!, picker.Quantity, picker.Quality);
+                else
+                {
+                    int maxQuality = QualityMode.MaxQuality(picker.Selection!);
+                    if (picker.Quality > maxQuality) throw new InvalidDataException(T($"Качество не может быть выше {maxQuality} в текущем режиме.", $"Quality cannot exceed {maxQuality} in the current mode."));
+                    save.SetItem(column, row, picker.Selection!, picker.Quantity, picker.Quality);
+                }
                 dirty = true; RenderInventory();
             });
             inventory.Controls.Add(cell, x, y);
         }
         Appearance.Apply(inventory);
+        HighlightSelection();
         clearFlagsButton.Enabled = save.Items.Any(i => i.Cheated);
+    }
+
+    private void HighlightSelection()
+    {
+        foreach (Control control in inventory.Controls)
+        {
+            if (control is not Button cell) continue;
+            int x = inventory.GetColumn(cell), y = inventory.GetRow(cell);
+            cell.FlatAppearance.BorderColor = selectedSlot == (x, y)
+                ? Accent
+                : Border;
+        }
     }
 
     private void ClearItemFlags()
@@ -238,7 +295,43 @@ public sealed class EditorForm : Form
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if (keyData == (Keys.Control | Keys.Z)) { Guard(Undo); return true; }
+        bool inventoryHotkeys = tabs.SelectedIndex == 1 && ActiveControl is not TextBoxBase and not ComboBox and not NumericUpDown;
+        if (inventoryHotkeys && keyData == (Keys.Control | Keys.C)) { Guard(CopySlot); return true; }
+        if (inventoryHotkeys && keyData == (Keys.Control | Keys.V)) { Guard(PasteSlot); return true; }
         return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+    private void CopySlot()
+    {
+        if (save == null || selectedSlot is not { } slot) throw new InvalidOperationException(T("Сначала выберите ячейку инвентаря.", "Select an inventory slot first."));
+        var item = save.Items.Find(i => i.X == slot.X && i.Y == slot.Y) ?? throw new InvalidOperationException(T("В выбранной ячейке нет предмета.", "The selected slot is empty."));
+        clipboard = item.Snapshot();
+        var definition = Catalog.Find(item.Hash);
+        status.Text = T("Скопировано: ", "Copied: ") + (definition?.DisplayName ?? $"ID {item.Hash}") + T(". Выберите ячейку кликом и нажмите Ctrl+V. Двойной клик открывает предмет.", ". Click a slot, then Ctrl+V. Double-click opens the item.");
+    }
+
+    private void PasteSlot()
+    {
+        if (save == null || selectedSlot is not { } slot) throw new InvalidOperationException(T("Сначала выберите ячейку инвентаря.", "Select an inventory slot first."));
+        if (clipboard == null) throw new InvalidOperationException(T("Буфер обмена пуст. Сначала скопируйте предмет через Ctrl+C.", "Clipboard is empty. Copy an item with Ctrl+C first."));
+        var existing = save.Items.Find(i => i.X == slot.X && i.Y == slot.Y);
+        if (existing != null && MessageBox.Show(T("Заменить предмет в этой ячейке копией?", "Replace the item in this slot with the copy?"), Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+        var previous = save.Items.ToArray();
+        string? quantity = existing?.Quantity?.Value, quality = existing?.Quality?.Value;
+        Remember(() =>
+        {
+            save.Items.Clear(); save.Items.AddRange(previous);
+            if (existing?.Quantity != null && quantity != null) existing.Quantity.Value = quantity;
+            if (existing?.Quality != null && quality != null) existing.Quality.Value = quality;
+        });
+        save.PasteItem(slot.X, slot.Y, clipboard);
+        dirty = true;
+        selectedSlot = slot;
+        RenderInventory();
+        foreach (Control control in inventory.Controls)
+            if (control is Button cell && inventory.GetColumn(cell) == slot.X && inventory.GetRow(cell) == slot.Y)
+                cell.Focus();
+        status.Text = T("Вставлено в ячейку ", "Pasted into slot ") + (slot.X + 1) + ":" + (slot.Y + 1) + ".";
     }
 
     private void Restore()
