@@ -14,7 +14,7 @@ Valkyrie — моя неофициальная утилита для редак�
 [b]Перед любыми изменениями закройте Valheim и сделайте независимую резервную копию персонажа.[/b]
 
 [h1]Скачать[/h1]
-[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/tag/v0.1.0-beta]Страница релиза Valkyrie на GitHub[/url]
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/tag/v1.0.0]Страница релиза Valkyrie на GitHub[/url]
 
 Откройте Assets и скачайте [b]Editor.exe[/b]. Не выбирайте Source code, если вам нужна готовая программа.
 

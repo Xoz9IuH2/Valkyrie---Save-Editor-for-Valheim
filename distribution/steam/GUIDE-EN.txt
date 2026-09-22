@@ -14,7 +14,7 @@ Edit your name and existing skills, add or replace items, move them between slot
 [b]Close Valheim and make an independent backup before editing anything.[/b]
 
 [h1]Download[/h1]
-[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/tag/v0.1.0-beta]Valkyrie release on GitHub[/url]
+[url=https://github.com/Xoz9IuH2/Valkyrie---Save-Editor-for-Valheim/releases/tag/v1.0.0]Valkyrie release on GitHub[/url]
 
 Expand Assets and download [b]Editor.exe[/b], not Source code, if you want the ready-to-run application.
 
